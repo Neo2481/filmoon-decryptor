@@ -126,7 +126,7 @@ async function waitForCF(page, logStep) {
     for (let i = 0; i < 30; i++) {
       await new Promise(r => setTimeout(r, 1000));
       try {
-        const cookies = await page.cookies('https://f75s.com');
+        const cookies = await page.cookies('https://filemoon-decrypt.yilogag600-048.workers.dev');
         const hasCF = cookies.some(c => c.name === 'cf_clearance');
         if (hasCF) {
           logStep('CF challenge passed (cf_clearance cookie set)');
@@ -194,7 +194,7 @@ async function fetchAndDecrypt(code, debugMode) {
     if (!cfPassed) {
       logStep('Warming up homepage to pass CF...');
       try {
-        await page.goto('https://f75s.com/', {
+        await page.goto('https://filemoon-decrypt.yilogag600-048.workers.dev/', {
           waitUntil: 'domcontentloaded',
           timeout: 20000,
         });
@@ -227,7 +227,7 @@ async function fetchAndDecrypt(code, debugMode) {
       }
 
       // Log API requests
-      if (url.includes('f75s.com/api/')) {
+      if (url.includes('filemoon-decrypt.yilogag600-048.workers.dev/api/')) {
         const entry = {
           ts: Date.now() - t0,
           method: req.method(),
@@ -237,7 +237,7 @@ async function fetchAndDecrypt(code, debugMode) {
           try { entry.body = JSON.parse(req.postData()); } catch (e) { entry.bodyRaw = req.postData().substring(0, 500); }
         }
         allRequests.push(entry);
-        logStep('>> ' + req.method() + ' ' + url.replace('https://f75s.com', ''));
+        logStep('>> ' + req.method() + ' ' + url.replace('https://filemoon-decrypt.yilogag600-048.workers.dev', ''));
       }
 
       req.continue();
@@ -245,7 +245,7 @@ async function fetchAndDecrypt(code, debugMode) {
 
     page.on('response', async (resp) => {
       const url = resp.url();
-      if (!url.includes('f75s.com/api/')) return;
+      if (!url.includes('filemoon-decrypt.yilogag600-048.workers.dev/api/')) return;
 
       const entry = { ts: Date.now() - t0, status: resp.status(), url: url };
 
@@ -262,7 +262,7 @@ async function fetchAndDecrypt(code, debugMode) {
       }
 
       allResponses.push(entry);
-      logStep('<< ' + resp.status() + ' ' + url.replace('https://f75s.com', ''));
+      logStep('<< ' + resp.status() + ' ' + url.replace('https://filemoon-decrypt.yilogag600-048.workers.dev', ''));
 
       if (url.includes('access/challenge') && resp.status() === 200) challengeData = entry.body;
       if (url.includes('access/attest') && resp.status() === 200) attestData = entry.body;
@@ -273,7 +273,7 @@ async function fetchAndDecrypt(code, debugMode) {
     });
 
     // 5. Navigate to video page (use domcontentloaded — fast, don't wait for networkidle)
-    const videoUrl = 'https://f75s.com/ei4/' + code;
+    const videoUrl = 'https://filemoon-decrypt.yilogag600-048.workers.dev/ei4/' + code;
     logStep('Navigating to ' + videoUrl);
 
     try {
@@ -460,8 +460,8 @@ app.get('/proxy', (req, res) => {
     headers: {
       'User-Agent': UA,
       'Accept': '*/*, video/mp4, application/vnd.apple.mpegurl',
-      'Referer': 'https://f75s.com/',
-      'Origin': 'https://f75s.com',
+      'Referer': 'https://filemoon-decrypt.yilogag600-048.workers.dev/',
+      'Origin': 'https://filemoon-decrypt.yilogag600-048.workers.dev',
     },
   }, (proxyRes) => {
     if (proxyRes.headers['content-type']) res.set('Content-Type', proxyRes.headers['content-type']);
@@ -482,7 +482,7 @@ app.get('/rewrite', async (req, res) => {
   try {
     const client = new URL(m3u8Url).protocol === 'https:' ? https : http;
     const body = await new Promise((resolve, reject) => {
-      client.get(m3u8Url, { headers: { 'User-Agent': UA, 'Referer': 'https://f75s.com/' } }, (r) => {
+      client.get(m3u8Url, { headers: { 'User-Agent': UA, 'Referer': 'https://filemoon-decrypt.yilogag600-048.workers.dev/' } }, (r) => {
         let d = '';
         r.on('data', c => d += c);
         r.on('end', () => resolve(d));
